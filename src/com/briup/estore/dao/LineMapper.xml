@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.estore.dao.ILineDao">
+	<insert id="savaLine" parameterType="Line">
+		<selectKey resultType="long" keyProperty="id" order="BEFORE">
+			select u_seq.nextval from dual
+		</selectKey>
+
+		insert into tbl_line(id,num,order_id,book_id)
+		values(#{id},#{num},#{order.id},#{book.id})
+	</insert>
+	
+	<delete id="deleteLineByOrderId" parameterType="long">
+		delete from tbl_line where order_id = #{order.id}
+	</delete>
+	
+	
+	<resultMap type="line" id="lineResult">
+		<id property="id" column="id" />
+		<result property="num" column="num" />
+		<association property="book" javaType="Book">
+			<id property="id" column="bid" />
+			<result property="name" column="name" />
+			<result property="price" column="price" />
+		</association>
+	</resultMap>
+	<select id="findLinesByOrderId" parameterType="long" resultMap="lineResult">
+	    select tl.id,tl.num,tb.id as bid,tb.name,tb.price
+		from tbl_line tl,tbl_book tb 
+		where tl.book_id = tb.id and tl.order_id = #{orderId}
+	</select>
+</mapper>			
